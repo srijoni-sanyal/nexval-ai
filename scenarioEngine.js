@@ -1,25 +1,19 @@
 function generateScenarios(input) {
-    const base = {
-        ...input
-    };
+    const base = { ...input };
 
     const best = {
         ...input,
-        growthRate: input.growthRate + 0.1,   // BIG jump
-        costs: input.costs * 0.8              // LOWER costs
+        growthRate: input.growthRate + 0.05,
+        costs: input.costs * 0.9
     };
 
     const worst = {
         ...input,
-        growthRate: input.growthRate - 0.1,   // BIG drop
-        costs: input.costs * 1.3              // HIGHER costs
+        growthRate: input.growthRate - 0.05,
+        costs: input.costs * 1.15
     };
 
-    return {
-        base,
-        best,
-        worst
-    };
+    return { base, best, worst };
 }
 
 module.exports = { generateScenarios };
