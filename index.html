@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NexVal AI • Ultra Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #020617, #000000);
+            color: #e2e8f0;
+        }
+
+        .header {
+            padding: 20px 30px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #22c55e;
+            border-bottom: 1px solid #1e293b;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            padding: 25px;
+            border-right: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #1e293b;
+            color: white;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border: none;
+            color: black;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 18px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            border-color: #22c55e;
+            transform: translateY(-5px);
+        }
+
+        .tooltip {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .card p {
+            font-size: 22px;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        /* Risk Colors */
+        .low { color: #22c55e; }
+        .moderate { color: #facc15; }
+        .high { color: #ef4444; }
+
+        /* Insight */
+        .insight-box {
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid #1e293b;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Chart */
+        .chart-container {
+            height: 450px;
+            border-radius: 14px;
+            border: 1px solid #1e293b;
+            padding: 15px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Download button */
+        .download {
+            margin-top: 15px;
+            padding: 10px;
+            background: #38bdf8;
+            border: none;
+            color: black;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">NexVal AI • Ultra Financial Engine</div>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Inputs</h3>
+
+        <input id="revenue" placeholder="Revenue">
+        <input id="growth" placeholder="Growth (0.1)">
+        <input id="costs" placeholder="Costs">
+        <input id="years" placeholder="Years">
+        <input id="discount" placeholder="Discount Rate">
+        <input id="country" placeholder="Country (USA / UK / India)">
+
+        <button onclick="analyze()">Run Analysis</button>
+
+        <button class="download" onclick="downloadReport()">Download Report</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- KPI CARDS -->
+        <div class="cards">
+            <div class="card">
+                <div class="tooltip">Net Present Value</div>
+                <p id="npv">--</p>
+            </div>
+
+            <div class="card">
+                <div class="tooltip">Best Scenario Return</div>
+                <p id="best">--</p>
+            </div>
+
+            <div class="card">
+                <div class="tooltip">Worst Scenario Return</div>
+                <p id="worst">--</p>
+            </div>
+
+            <div class="card">
+                <div class="tooltip">Internal Rate of Return</div>
+                <p id="irr">--</p>
+            </div>
+
+            <div class="card">
+                <div class="tooltip">Risk Level</div>
+                <p id="risk">--</p>
+            </div>
+        </div>
+
+        <!-- INSIGHT -->
+        <div class="insight-box">
+            <h3>AI Insight</h3>
+            <p id="output"></p>
+        </div>
+
+        <!-- CHART -->
+        <h3>Scenario Simulation</h3>
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="dashboard.js"></script>
+
+<script>
+function downloadReport() {
+    const text = document.getElementById("output").innerText;
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "NexVal_Report.txt";
+    link.click();
+}
+</script>
+
+</body>
+</html>
