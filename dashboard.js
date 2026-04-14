@@ -14,8 +14,15 @@ async function analyze() {
             costs: Number(document.getElementById("costs").value),
             years: Number(document.getElementById("years").value),
             discountRate: Number(document.getElementById("discount").value),
-            country: document.getElementById("country").value
+            country: document.getElementById("country").value.toLowerCase()
         };
+
+        if (!data.initialRevenue || !data.growthRate || !data.costs || !data.years || !data.discountRate) {
+            alert("Please fill all fields properly");
+            return;
+        }
+
+        document.getElementById("output").textContent = "Analyzing...";
 
         const response = await fetch("https://nexval-ai.onrender.com/analyze", {
             method: "POST",
@@ -29,9 +36,9 @@ async function analyze() {
 
         const baseNPV = result.results.base.npv;
 
-        document.getElementById("npv").textContent = baseNPV.toFixed(2);
-        document.getElementById("best").textContent = result.results.best.npv.toFixed(2);
-        document.getElementById("worst").textContent = result.results.worst.npv.toFixed(2);
+        document.getElementById("npv").textContent = "₹ " + baseNPV.toLocaleString();
+        document.getElementById("best").textContent = "₹ " + result.results.best.npv.toLocaleString();
+        document.getElementById("worst").textContent = "₹ " + result.results.worst.npv.toLocaleString();
 
         if (result.irr !== undefined) {
             document.getElementById("irr").textContent =
@@ -51,14 +58,12 @@ async function analyze() {
                 "high";
         }
 
-        // 🔥 BUY / HOLD / AVOID
         const decision = getDecision(baseNPV, result.irr, riskScore);
         const decisionEl = document.getElementById("decision");
 
         decisionEl.textContent = decision.text;
         decisionEl.className = decision.class;
 
-        // Chart data
         const base = result.results.base.cashFlows;
         const best = result.results.best.cashFlows;
         const worst = result.results.worst.cashFlows;
@@ -84,6 +89,7 @@ async function analyze() {
                 ]
             },
             options: {
+                animation: false,
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
@@ -100,4 +106,19 @@ async function analyze() {
         console.error(error);
         alert("Error occurred");
     }
+}
+
+// 🔥 PDF DOWNLOAD
+function downloadPDF() {
+    const element = document.getElementById("report");
+
+    const opt = {
+        margin: 0.5,
+        filename: "NexVal_Report.pdf",
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
