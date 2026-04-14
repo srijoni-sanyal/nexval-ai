@@ -1,31 +1,43 @@
-function generateInsight(results) {
-    const base = results.base.npv;
-    const best = results.best.npv;
-    const worst = results.worst.npv;
+function generateInsight(results, irr, risk) {
+    const baseNPV = results.base.npv;
+    const bestNPV = results.best.npv;
+    const worstNPV = results.worst.npv;
 
-    let text = "";
+    const spread = bestNPV - worstNPV;
 
-    if (base > 0) {
-        text += "The investment shows positive returns in the base case. ";
+    let insight = "";
+
+    if (baseNPV > 0) {
+        insight += "The investment generates positive value in the base case. ";
     } else {
-        text += "The investment may not be viable in the base scenario. ";
+        insight += "The investment destroys value in the base case. ";
     }
 
-    if (best > base) {
-        text += "There is strong upside potential. ";
-    }
-
-    if (worst < base * 0.7) {
-        text += "However, downside risk is significant. ";
-    }
-
-    if (worst > 0) {
-        text += "Overall, relatively safe.";
+    if (irr > 0.15) {
+        insight += "Returns are strong. ";
+    } else if (irr > 0.08) {
+        insight += "Returns are moderate. ";
     } else {
-        text += "Caution advised.";
+        insight += "Returns are weak. ";
     }
 
-    return text;
+    if (spread > baseNPV * 1.5) {
+        insight += "There is high uncertainty across scenarios, indicating significant risk. ";
+    } else if (spread > baseNPV * 0.7) {
+        insight += "There is moderate variability, suggesting balanced risk. ";
+    } else {
+        insight += "Outcomes are stable, indicating lower risk. ";
+    }
+
+    if (baseNPV > 0 && irr > 0.12 && spread < baseNPV) {
+        insight += "Overall, this appears to be an attractive and stable investment.";
+    } else if (baseNPV > 0 && spread > baseNPV) {
+        insight += "Overall, the investment is promising but carries meaningful downside risk.";
+    } else {
+        insight += "Overall, this investment may not meet return expectations.";
+    }
+
+    return insight;
 }
 
 module.exports = { generateInsight };
