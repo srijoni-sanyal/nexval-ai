@@ -5,6 +5,7 @@
 <title>NexVal AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -27,6 +28,12 @@ body {
 .brand {
     font-size: 14px;
     color: #9ca3af;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-left: 40px;
 }
 
 .container {
@@ -60,6 +67,7 @@ button {
     border-radius: 10px;
     margin-top: 10px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .kpi {
@@ -93,6 +101,10 @@ button {
     <div class="brand">Powered by Srijoni Sanyal ✨</div>
 </div>
 
+<div class="subtitle">
+AI-powered financial valuation & risk analysis platform
+</div>
+
 <div class="container">
 
 <div class="card">
@@ -106,9 +118,10 @@ button {
 <input id="country" placeholder="Country (India / USA / UAE)">
 
 <button onclick="analyze()">Run Analysis</button>
+<button onclick="downloadPDF()">Download Report 📄</button>
 </div>
 
-<div class="card">
+<div class="card" id="report">
 <h3>Insight</h3>
 <p id="output"></p>
 
