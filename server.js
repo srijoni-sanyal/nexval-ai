@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
     res.send('NexVal AI Running 🚀');
 });
 
-// MAIN ANALYZE ROUTE
+// MAIN ANALYSIS ROUTE
 app.post('/analyze', (req, res) => {
     try {
         const {
@@ -32,7 +32,7 @@ app.post('/analyze', (req, res) => {
             country
         } = req.body;
 
-        // 1. Generate scenarios
+        // 🧱 Step 1: Scenario generation
         const scenarios = generateScenarios({
             initialRevenue,
             growthRate,
@@ -42,14 +42,14 @@ app.post('/analyze', (req, res) => {
 
         const results = {};
 
-        // 2. Loop through scenarios
+        // 🧱 Step 2: Loop through scenarios
         for (let key in scenarios) {
             const scenario = scenarios[key];
 
             // Cash flow
             const cashFlows = calculateCashFlow(scenario);
 
-            // Apply tax
+            // Tax
             const taxed = applyTax(cashFlows, country);
 
             // Format for DCF
@@ -67,10 +67,7 @@ app.post('/analyze', (req, res) => {
             };
         }
 
-        // 3. Insight
-        const insight = generateInsight(results);
-
-        // 4. IRR (base case)
+        // 🧱 Step 3: IRR (base case)
         const irr = calculateIRR(
             results.base.cashFlows.map(cf => ({
                 year: cf.year,
@@ -78,10 +75,13 @@ app.post('/analyze', (req, res) => {
             }))
         );
 
-        // 5. Risk
+        // 🧱 Step 4: Risk
         const risk = calculateRisk(results);
 
-        // 6. Final response
+        // 🧱 Step 5: Insight (UPDATED ENGINE)
+        const insight = generateInsight(results, irr, risk);
+
+        // 🧱 Step 6: Response
         res.json({
             results,
             insight,
@@ -91,13 +91,16 @@ app.post('/analyze', (req, res) => {
 
     } catch (error) {
         console.error("SERVER ERROR:", error);
+
         res.status(500).json({
             error: error.message
         });
     }
 });
 
-// Start server
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
+// PORT FIX (Render compatible)
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
