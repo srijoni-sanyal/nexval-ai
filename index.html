@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>NexVal AI Dashboard</title>
+<title>NexVal AI</title>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -21,7 +19,6 @@ body {
 .header {
     padding: 20px 40px;
     font-size: 28px;
-    font-weight: 600;
     color: #22c55e;
     display: flex;
     justify-content: space-between;
@@ -43,7 +40,6 @@ body {
     padding: 20px;
     border-radius: 16px;
     flex: 1;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 input {
@@ -63,78 +59,75 @@ button {
     border: none;
     border-radius: 10px;
     margin-top: 10px;
-    font-weight: bold;
     cursor: pointer;
 }
 
-button:hover {
-    background: #16a34a;
-}
-
 .kpi {
-    font-size: 22px;
     margin: 10px 0;
+    font-size: 18px;
 }
 
 .low { color: #22c55e; }
 .moderate { color: #facc15; }
 .high { color: #ef4444; }
 
-canvas {
-    margin-top: 20px;
+.buy { color: #22c55e; font-weight: bold; }
+.hold { color: #facc15; font-weight: bold; }
+.avoid { color: #ef4444; font-weight: bold; }
+
+.chart-container {
+    overflow-x: auto;
 }
 
-.footer {
-    text-align: center;
-    margin-top: 20px;
-    color: #9ca3af;
-    font-size: 14px;
+.chart-inner {
+    min-width: 800px;
 }
+
 </style>
 </head>
 
 <body>
 
 <div class="header">
-    NexVal AI Dashboard
+    NexVal AI
     <div class="brand">Powered by Srijoni Sanyal ✨</div>
 </div>
 
 <div class="container">
 
-    <!-- INPUT PANEL -->
-    <div class="card">
-        <h3>Inputs</h3>
+<div class="card">
+<h3>Inputs</h3>
 
-        <input id="revenue" placeholder="Initial Revenue">
-        <input id="growth" placeholder="Growth Rate (0.1 = 10%)">
-        <input id="costs" placeholder="Costs">
-        <input id="years" placeholder="Years">
-        <input id="discount" placeholder="Discount Rate">
-        <input id="country" placeholder="Country (India / USA / UAE)">
+<input id="revenue" placeholder="Initial Revenue">
+<input id="growth" placeholder="Growth Rate (0.1 = 10%)">
+<input id="costs" placeholder="Costs">
+<input id="years" placeholder="Years">
+<input id="discount" placeholder="Discount Rate">
+<input id="country" placeholder="Country (India / USA / UAE)">
 
-        <button onclick="analyze()">Run Analysis</button>
-    </div>
+<button onclick="analyze()">Run Analysis</button>
+</div>
 
-    <!-- OUTPUT PANEL -->
-    <div class="card">
-        <h3>Insight</h3>
-        <p id="output"></p>
+<div class="card">
+<h3>Insight</h3>
+<p id="output"></p>
 
-        <h3>KPIs</h3>
-        <div class="kpi">NPV: <span id="npv"></span></div>
-        <div class="kpi">Best: <span id="best"></span></div>
-        <div class="kpi">Worst: <span id="worst"></span></div>
-        <div class="kpi">IRR: <span id="irr"></span></div>
-        <div class="kpi">Risk: <span id="risk"></span></div>
+<h3>KPIs</h3>
+<div class="kpi">NPV: <span id="npv"></span></div>
+<div class="kpi">Best: <span id="best"></span></div>
+<div class="kpi">Worst: <span id="worst"></span></div>
+<div class="kpi">IRR: <span id="irr"></span></div>
+<div class="kpi">Risk: <span id="risk"></span></div>
+<div class="kpi">Recommendation: <span id="decision"></span></div>
 
-        <canvas id="chart" height="200"></canvas>
-    </div>
+<div class="chart-container">
+<div class="chart-inner">
+<canvas id="chart"></canvas>
+</div>
+</div>
 
 </div>
 
-<div class="footer">
-    NexVal AI • Financial Intelligence Engine
 </div>
 
 <script src="dashboard.js"></script>
