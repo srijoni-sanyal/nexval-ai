@@ -6,7 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Engines
 const { calculateCashFlow } = require('./cashflowEngine');
 const { calculateNPV } = require('./dcfEngine');
 const { applyTax } = require('./taxEngine');
@@ -15,12 +14,10 @@ const { generateInsight } = require('./insightEngine');
 const { calculateIRR } = require('./irrEngine');
 const { calculateRisk } = require('./riskEngine');
 
-// Home route
 app.get('/', (req, res) => {
     res.send('NexVal AI Running 🚀');
 });
 
-// MAIN ANALYSIS ROUTE
 app.post('/analyze', (req, res) => {
     try {
         const {
@@ -32,7 +29,6 @@ app.post('/analyze', (req, res) => {
             country
         } = req.body;
 
-        // 🧱 Step 1: Scenario generation
         const scenarios = generateScenarios({
             initialRevenue,
             growthRate,
@@ -42,23 +38,17 @@ app.post('/analyze', (req, res) => {
 
         const results = {};
 
-        // 🧱 Step 2: Loop through scenarios
         for (let key in scenarios) {
             const scenario = scenarios[key];
 
-            // Cash flow
             const cashFlows = calculateCashFlow(scenario);
-
-            // Tax
             const taxed = applyTax(cashFlows, country);
 
-            // Format for DCF
             const formatted = taxed.map(cf => ({
                 year: cf.year,
                 profit: cf.profitAfterTax
             }));
 
-            // NPV
             const npv = calculateNPV(formatted, discountRate);
 
             results[key] = {
@@ -67,7 +57,6 @@ app.post('/analyze', (req, res) => {
             };
         }
 
-        // 🧱 Step 3: IRR (base case)
         const irr = calculateIRR(
             results.base.cashFlows.map(cf => ({
                 year: cf.year,
@@ -75,30 +64,24 @@ app.post('/analyze', (req, res) => {
             }))
         );
 
-        // 🧱 Step 4: Risk
-        const risk = calculateRisk(results);
+        const riskData = calculateRisk(results);
 
-        // 🧱 Step 5: Insight (UPDATED ENGINE)
-        const insight = generateInsight(results, irr, risk);
+        const insight = generateInsight(results, irr, riskData.level);
 
-        // 🧱 Step 6: Response
         res.json({
             results,
             insight,
             irr,
-            risk
+            risk: riskData.level,
+            riskScore: riskData.score
         });
 
     } catch (error) {
-        console.error("SERVER ERROR:", error);
-
-        res.status(500).json({
-            error: error.message
-        });
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
 });
 
-// PORT FIX (Render compatible)
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
