@@ -2,7 +2,6 @@ let chart;
 
 async function analyze() {
     try {
-        // Collect input values
         const data = {
             initialRevenue: Number(document.getElementById("revenue").value),
             growthRate: Number(document.getElementById("growth").value),
@@ -12,8 +11,7 @@ async function analyze() {
             country: document.getElementById("country").value
         };
 
-        // API Call
-        const response = await fetch("http://localhost:3000/analyze", {
+        const response = await fetch("https://nexval-ai.onrender.com/analyze", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -23,16 +21,8 @@ async function analyze() {
 
         const result = await response.json();
 
-        // 🛑 Safety check
-        if (!result.results || !result.results.base) {
-            alert("Invalid server response");
-            return;
-        }
-
-        // 🧠 Insight
         document.getElementById("output").textContent = result.insight;
 
-        // 💰 KPIs
         document.getElementById("npv").textContent =
             result.results.base.npv.toFixed(2);
 
@@ -42,16 +32,17 @@ async function analyze() {
         document.getElementById("worst").textContent =
             result.results.worst.npv.toFixed(2);
 
-        // 📈 IRR
         if (result.irr !== undefined) {
             document.getElementById("irr").textContent =
                 (result.irr * 100).toFixed(2) + "%";
         }
 
-        // ⚠️ Risk + Color Styling
-        if (result.risk) {
+        // 🔥 Risk + Score
+        if (result.risk && result.riskScore) {
             const riskEl = document.getElementById("risk");
-            riskEl.textContent = result.risk;
+
+            riskEl.textContent =
+                result.risk + " (" + result.riskScore + "%)";
 
             riskEl.className =
                 result.risk.includes("Low") ? "low" :
@@ -59,10 +50,9 @@ async function analyze() {
                 "high";
         }
 
-        // 📊 Extract scenario data
-        const base = result.results.base.cashFlows || [];
-        const best = result.results.best.cashFlows || [];
-        const worst = result.results.worst.cashFlows || [];
+        const base = result.results.base.cashFlows;
+        const best = result.results.best.cashFlows;
+        const worst = result.results.worst.cashFlows;
 
         const labels = base.map(x => "Year " + x.year);
 
@@ -70,39 +60,29 @@ async function analyze() {
         const bestData = best.map(x => x.profitAfterTax);
         const worstData = worst.map(x => x.profitAfterTax);
 
-        // 🛑 Canvas safety
-        const canvas = document.getElementById("chart");
+        const ctx = document.getElementById("chart").getContext("2d");
 
-        if (!canvas) {
-            alert("Chart container missing");
-            return;
-        }
-
-        const ctx = canvas.getContext("2d");
-
-        // Destroy old chart
         if (chart) chart.destroy();
 
-        // 📈 Create premium chart
         chart = new Chart(ctx, {
             type: "line",
             data: {
-                labels: labels,
+                labels,
                 datasets: [
                     {
-                        label: "Base Case",
+                        label: "Base",
                         data: baseData,
                         borderColor: "#22c55e",
                         tension: 0.4
                     },
                     {
-                        label: "Best Case",
+                        label: "Best",
                         data: bestData,
                         borderColor: "#38bdf8",
                         tension: 0.4
                     },
                     {
-                        label: "Worst Case",
+                        label: "Worst",
                         data: worstData,
                         borderColor: "#ef4444",
                         tension: 0.4
@@ -111,33 +91,12 @@ async function analyze() {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 1200
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: "#e2e8f0"
-                        }
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: "#94a3b8" }
-                    },
-                    y: {
-                        ticks: { color: "#94a3b8" }
-                    }
-                }
+                maintainAspectRatio: false
             }
         });
 
     } catch (error) {
-        console.error("ERROR:", error);
-        alert("Something went wrong. Check console.");
+        console.error(error);
+        alert("Error occurred");
     }
 }
